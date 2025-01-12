@@ -1,6 +1,7 @@
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 import uvicorn
+from fastapi.responses import JSONResponse
 
 
 app = FastAPI()
@@ -52,7 +53,8 @@ class Transaction(BaseModel):
 @app.post("/deposit")
 def deposit(transaction: Transaction):
     try:
-        return account.deposit(transaction.amount)
+        message = account.deposit(transaction.amount)
+        return JSONResponse(content={"message": message})
     except HTTPException as e:
         raise e
     except Exception as e:
@@ -61,7 +63,8 @@ def deposit(transaction: Transaction):
 @app.post("/withdraw")
 def withdraw(transaction: Transaction):
     try:
-        return account.withdraw(transaction.amount)
+        message = account.withdraw(transaction.amount)
+        return JSONResponse(content={"message": message})
     except HTTPException as e:
         raise e
     except Exception as e:
@@ -70,7 +73,8 @@ def withdraw(transaction: Transaction):
 @app.get("/check_balance")
 def check_balance():
     try:
-        return account.check_balance()
+        balance = account.check_balance()
+        return JSONResponse(content={"balance": balance})
     except Exception as e:
         raise HTTPException(status_code=500, detail="Internal server error")
 
